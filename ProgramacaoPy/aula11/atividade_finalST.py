@@ -2,31 +2,52 @@ import streamlit as st
 
 st.title("Atividade Final")
 
-N = int(input("Quantas pessoas serão digitadas? "))
-#Lista
-nomes = []
-idades = []
-alturas = []
+def ler_pessoas(n):
+    pessoas = []
 
-# Entrada de dados
-for i in range(N):
-    print(f"Dados da {i+1}ª pessoa:")
-    nome = input("Nome: ")
-    idade = int(input("Idade: "))
-    altura = float(input("Altura: "))
+    for i in range(n):
+        print(f"\nDados da {i+1}ª pessoa:")
+        nome = input("Nome: ")
+        idade = int(input("Idade: "))
+        altura = float(input("Altura: ").replace(",", "."))
 
-# Cálculo da altura média
-altura_media = sum(alturas) / N
+        pessoas.append({
+            "nome": nome,
+            "idade": idade,
+            "altura": altura
+        })
 
-# Percentual de pessoas com menos de 16 anos
-menores_16 = [nomes[i] for i in range(N) if idades[i] < 16]
-percentual_menores = (len(menores_16) / N) * 100
+    return pessoas
 
-# Saida de dados
-print(f"\nAltura média = {altura_media:.2f}")
-print(f"Pessoas com menos de 16 anos: {percentual_menores:.1f}%")
 
-if len(menores_16) > 0:
-    print("Nomes das pessoas com menos de 16 anos:")
-    for nome in menores_16:
-        print(nome)
+def calcular_altura_media(pessoas):
+    return sum(p["altura"] for p in pessoas) / len(pessoas)
+
+
+def filtrar_menores(pessoas):
+    return [p for p in pessoas if p["idade"] < 16]
+
+
+def main():
+    n = int(input("Quantas pessoas serão digitadas? "))
+
+    pessoas = ler_pessoas(n)
+
+    # cálculo da altura média
+    altura_media = calcular_altura_media(pessoas)
+
+    # filtragem dos menores de 16
+    menores = filtrar_menores(pessoas)
+    percentual_menores = (len(menores) / n) * 100
+
+    print(f"\nAltura média: {altura_media:.2f} m")
+    print(f"Pessoas com menos de 16 anos: {percentual_menores:.1f}%")
+
+    if menores:
+        print("Nomes das pessoas com menos de 16 anos:")
+        for p in menores:
+            print(p["nome"])
+    else:
+        print("Não há pessoas com menos de 16 anos.")
+
+
