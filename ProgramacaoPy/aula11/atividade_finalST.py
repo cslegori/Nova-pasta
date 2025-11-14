@@ -1,53 +1,44 @@
-import streamlit as st 
+import streamlit as st
 
-st.title("Atividade Final")
+st.title("Cadastro de Pessoas")
 
-def ler_pessoas(n):
-    pessoas = []
+# Número de pessoas
+N = st.number_input("Quantas pessoas deseja cadastrar?", min_value=1, step=1)
 
-    for i in range(n):
-        print(f"\nDados da {i+1}ª pessoa:")
-        nome = input("Nome: ")
-        idade = int(input("Idade: "))
-        altura = float(input("Altura: ").replace(",", "."))
+pessoas = []
 
-        pessoas.append({
-            "nome": nome,
-            "idade": idade,
-            "altura": altura
-        })
+st.subheader("Insira os dados:")
 
-    return pessoas
+for i in range(int(N)):
+    st.write(f"### Pessoa {i+1}")
+    nome = st.text_input(f"Nome {i+1}", key=f"nome_{i}")
+    idade = st.number_input(f"Idade {i+1}", min_value=0, key=f"idade_{i}")
+    altura = st.number_input(f"Altura (em metros) {i+1}", min_value=0.0, format="%.2f", key=f"altura_{i}")
 
+    if nome and altura > 0:
+        pessoas.append({"nome": nome, "idade": idade, "altura": altura})
 
-def calcular_altura_media(pessoas):
-    return sum(p["altura"] for p in pessoas) / len(pessoas)
+st.write("---")
 
-
-def filtrar_menores(pessoas):
-    return [p for p in pessoas if p["idade"] < 16]
-
-
-def main():
-    n = int(input("Quantas pessoas serão digitadas? "))
-
-    pessoas = ler_pessoas(n)
-
-    # cálculo da altura média
-    altura_media = calcular_altura_media(pessoas)
-
-    # filtragem dos menores de 16
-    menores = filtrar_menores(pessoas)
-    percentual_menores = (len(menores) / n) * 100
-
-    print(f"\nAltura média: {altura_media:.2f} m")
-    print(f"Pessoas com menos de 16 anos: {percentual_menores:.1f}%")
-
-    if menores:
-        print("Nomes das pessoas com menos de 16 anos:")
-        for p in menores:
-            print(p["nome"])
+if st.button("Calcular resultados"):
+    if len(pessoas) < N:
+        st.warning("Preencha todos os dados corretamente antes de calcular.")
     else:
-        print("Não há pessoas com menos de 16 anos.")
+        # Cálculo da altura média
+        altura_media = sum(p["altura"] for p in pessoas) / N
 
+        # Pessoas com menos de 16 anos
+        menores_16 = [p for p in pessoas if p["idade"] < 16]
+        perc_menores = (len(menores_16) / N) * 100
 
+        # Exibição dos resultados
+        st.subheader("Resultados")
+        st.write(f"**Altura média:** {altura_media:.2f} m")
+        st.write(f"**Porcentagem de pessoas com menos de 16 anos:** {perc_menores:.1f}%")
+
+        if menores_16:
+            st.write("**Pessoas com menos de 16 anos:**")
+            nomes = [p["nome"] for p in menores_16]
+            st.write(", ".join(nomes))
+        else:
+            st.write("Não há pessoas com menos de 16 anos.")
